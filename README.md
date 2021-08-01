@@ -7,7 +7,7 @@
     <h3>Getting Started</h3>
     <p>To get started, Install this package in your laravel project</p>
     <pre>
-    <code style="padding: 10px 10px 10px 10px;">composer require paytm/paytmchecksum</code>
+    <code style="font-size:20px;">composer require paytm/paytmchecksum</code>
     </pre>
     <p
       style="padding: 10px 10px 10px 10px; background-color: rgb(212, 208, 208)"
