@@ -1,4 +1,12 @@
 <h1>Paytm Payment Api Using Laravel 8</h1>
+    <h3>Introduction</h3>
+    <p>
+      Integrate paytm wallet in your application using paytm payment Api in
+      laravel.In this project we use official Paytm PHP SDK's.
+    </p>
+    <h3>Getting Started</h3>
+    <p>To get started, Install this package in your laravel project</p>
+    <code style="padding: 10px 10px 10px 10px;">composer require paytm/paytmchecksum</code>
     <p
       style="padding: 10px 10px 10px 10px; background-color: rgb(212, 208, 208)"
     >
@@ -14,4 +22,3 @@
         section and get test api detail. And put these detail on .env file</span
       >
     </p>
-    <p><code>Composer create-project laravel/laravel paytmPaymentIntegration</code></p>
