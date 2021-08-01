@@ -14,3 +14,4 @@
         section and get test api detail. And put these detail on .env file</span
       >
     </p>
+    <p><code>Composer create-project laravel/laravel paytmPaymentIntegration</code></p>
