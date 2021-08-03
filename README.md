@@ -25,6 +25,7 @@
       >
     </p>
     <h6>Now Add the paytm credentials in your <code>.env</code>file</h6>
+    <pre>
     <code>
       PAYTM_ENVIRONMENT=local 
       PAYTM_MERCHANT_ID=YOUR_MERCHANT_ID_HERE
@@ -33,102 +34,178 @@
       PAYTM_CHANNEL=YOUR_CHANNEL_HERE
       PAYTM_INDUSTRY_TYPE=YOUR_INDUSTRY_TYPE_HERE
     </code>
+  </pre>
     <p>Now Add paytm's utility package in your app. Go to project and create file in <code>App/paytm</code> folder and name that file <code>PaytmChecksum.php</code></p>
     <p>here is the link to download <code>PaytmChecksum.php</code> file.on folder <code>App/paytm/</code>  <a href="https://github.com/paytm/Paytm_PHP_Checksum/blob/master/paytmchecksum/PaytmChecksum.php">paytm package</a></p>
     <p>Now Create A controller <code>php artisan make:controller PaymentController</code></p>
     <h2>Usage</h2>
     <h5>Making Transaction via Api</h5>
+    <pre>
     <code>
-      <?php
+      <p><?php</p>
 
             namespace App\Http\Controllers;
-            use Illuminate\Http\Request;
-            use Illuminate\Support\Str;
-            use paytm\paytmchecksum\PaytmChecksum;
-            use Validator;
+                use Illuminate\Http\Request;
+                use Illuminate\Support\Str;
+                use paytm\paytmchecksum\PaytmChecksum;
+                use Validator;
 
-            class PaymentController extends Controller
-            {
-
-                public function paymentInitiate(Request $request)
+                class PaymentController extends Controller
                 {
-                    date_default_timezone_set("Asia/Kolkata");
-                    $valid = Validator::make($request->all(), [
-                        'amount' => "required",
-                    ]);
 
-                    if ($valid->passes()) {
-                        $paytmParams = array();
-                        $orderid = Str::random(12) . rand(11111111, 99999999);
-                        $mid = env('PAYTM_MERCHANT_ID');
-                        // return $mid;
-                        $paytmParams["body"] = array(
-                            "requestType" => "Payment",
-                            "mid" => $mid,
-                            "websiteName" => env('PAYTM_MERCHANT_WEBSITE'),
-                            "orderId" => $orderid,
-                            "callbackUrl" => url('/api/check-transaction-status/'.$orderid),
-                            "txnAmount" => array(
-                                "value" => $request->amount,
-                                "currency" => "INR",
-                            ),
-                            "userInfo" => array(
-                                "custId" => auth()->user()->id,
-                            ),
-                        );
+                    public function paymentInitiate(Request $request)
+                    {
+                        date_default_timezone_set("Asia/Kolkata");
+                        $valid = Validator::make($request->all(), [
+                            'amount' => "required",
+                        ]);
 
-                        /*
-                        * Generate checksum by parameters we have in body
-                        * Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys
-                        */
-                        $checksum = PaytmChecksum::generateSignature(json_encode($paytmParams["body"], JSON_UNESCAPED_SLASHES), env('PAYTM_MERCHANT_KEY'));
+                        if ($valid->passes()) {
+                            $paytmParams = array();
+                            $orderid = Str::random(12) . rand(11111111, 99999999);
+                            $mid = env('PAYTM_MERCHANT_ID');
+                            // return $mid;
+                            $paytmParams["body"] = array(
+                                "requestType" => "Payment",
+                                "mid" => $mid,
+                                "websiteName" => env('PAYTM_MERCHANT_WEBSITE'),
+                                "orderId" => $orderid,
+                                "callbackUrl" => url('/api/check-transaction-status/'.$orderid),
+                                "txnAmount" => array(
+                                    "value" => $request->amount,
+                                    "currency" => "INR",
+                                ),
+                                "userInfo" => array(
+                                    "custId" => 2,
+                                ),
+                            );
 
-                        $paytmParams["head"] = array(
-                            "signature" => $checksum,
-                        );
+                            /*
+                            * Generate checksum by parameters we have in body
+                            * Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys
+                            */
+                            $checksum = PaytmChecksum::generateSignature(json_encode($paytmParams["body"], JSON_UNESCAPED_SLASHES), env('PAYTM_MERCHANT_KEY'));
 
-                        $post_data = json_encode($paytmParams, JSON_UNESCAPED_SLASHES);
-                        /* for Staging */
+                            $paytmParams["head"] = array(
+                                "signature" => $checksum,
+                            );
 
-                        if (env('PAYTM_ENVIRONMENT') == 'local') {
-                            $url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=" . $mid . "&orderId=" . $orderid;
-                        } else {
-                            $url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=" . $mid . "&orderId=" . $orderid;
-                        }
-                        /* for Production */
-                        // $url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765";
+                            $post_data = json_encode($paytmParams, JSON_UNESCAPED_SLASHES);
+                            /* for Staging */
 
-                        $ch = curl_init($url);
-                        curl_setopt($ch, CURLOPT_POST, 1);
-                        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
-                        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                        curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
-                        $response = curl_exec($ch);
-                        $status = (json_decode($response)->body->resultInfo->resultStatus);
-                        $msg = (json_decode($response)->body->resultInfo->resultMsg);
-                        $txntoken = (json_decode($response)->body->txnToken);
-                        if ($status == "S" && $msg == "Success") {
-                            return response()->json([
-                                'status' => true,
-                                'orderid' => $orderid,
-                                'mid' => $mid,
-                                'amount' => $request->amount,
-                                'txnToken' => $txntoken,
-                                'callbackurl' => url('/api/' . $version . '/check-transaction-status'),
-                            ]);
+                            if (env('PAYTM_ENVIRONMENT') == 'local') {
+                                $url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=" . $mid . "&orderId=" . $orderid;
+                            } else {
+                                $url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=" . $mid . "&orderId=" . $orderid;
+                            }
+                            /* for Production */
+                            // $url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=YOUR_MID_HERE&orderId=ORDERID_98765";
+
+                            $ch = curl_init($url);
+                            curl_setopt($ch, CURLOPT_POST, 1);
+                            curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+                            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                            curl_setopt($ch, CURLOPT_HTTPHEADER, array("Content-Type: application/json"));
+                            $response = curl_exec($ch);
+                            $status = (json_decode($response)->body->resultInfo->resultStatus);
+                            $msg = (json_decode($response)->body->resultInfo->resultMsg);
+                            $txntoken = (json_decode($response)->body->txnToken);
+                            if ($status == "S" && $msg == "Success") {
+                                return response()->json([
+                                    'status' => true,
+                                    'orderid' => $orderid,
+                                    'mid' => $mid,
+                                    'amount' => $request->amount,
+                                    'txnToken' => $txntoken,
+                                    'callbackurl' => url('/api/' . $version . '/check-transaction-status/'.$orderid),
+                                ]);
+                            } else {
+                                return response()->json([
+                                    'status' => false,
+                                    'msg' => $msg,
+                                ]);
+                            }
                         } else {
                             return response()->json([
                                 'status' => false,
-                                'msg' => $msg,
+                                'msg' => $valid->errors()->all(),
                             ]);
                         }
-                    } else {
-                        return response()->json([
-                            'status' => false,
-                            'msg' => $valid->errors()->all(),
-                        ]);
-                    }
+        }
     }
-}
 
-    </code>
+  </pre>
+  <p>After creating payment request now verify the status of transaction using <code>orderid</code> .</p>
+  <pre>
+    <code>
+      public function checkTransactionStatus($orderid)
+    {
+        $paytmParams = array();
+
+        /* body parameters */
+        $mid = env('PAYTM_MERCHANT_ID');
+        $paytmParams["body"] = array(
+            /* Find your MID in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys */
+            "mid" => $mid,
+
+            /* Enter your order id which needs to be check status for */
+            "orderId" => $orderid,
+        );
+
+        /**
+         * Generate checksum by parameters we have in body
+         * Find your Merchant Key in your Paytm Dashboard at https://dashboard.paytm.com/next/apikeys
+         */
+        $checksum = PaytmChecksum::generateSignature(json_encode($paytmParams["body"], JSON_UNESCAPED_SLASHES), env('PAYTM_MERCHANT_KEY'));
+
+        /* head parameters */
+        $paytmParams["head"] = array(
+            "signature" => $checksum,
+        );
+
+        /* prepare JSON string for request */
+        $post_data = json_encode($paytmParams, JSON_UNESCAPED_SLASHES);
+
+        /* for Staging */
+
+        if (env('PAYTM_ENVIRONMENT') == 'local') {
+            $url = "https://securegw-stage.paytm.in/v3/order/status";
+        } else {
+            $url = "https://securegw.paytm.in/v3/order/status";
+        }
+        /* for Production */
+        // $url = "https://securegw.paytm.in/v3/order/status";
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_POST, 1);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $post_data);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        $response = curl_exec($ch);
+        $status = (json_decode($response)->body->resultInfo->resultStatus);
+        $msg = (json_decode($response)->body->resultInfo->resultMsg);
+        if ($status === "TXN_SUCCESS") {
+            $txnid = (json_decode($response)->body->txnId);
+            $orderid = (json_decode($response)->body->orderId);
+            $amount = (json_decode($response)->body->txnAmount);
+            return response()->json([
+              "status" => true,
+              'msg' => $msg
+            ]);
+        } else {
+            return response()->json([
+                'status' => false,
+                'msg' => $msg,
+            ]);
+        }
+    }
+  </pre>
+
+  <p>Now Add the code on <code>Routes/api.php</code></p>
+  <pre>
+    <code>
+      Route::post('/initiate-payment', [PaymentController::class, 'paymentInitiate']); //amount   there you can pass only amount
+      Route::get('/check-transaction-status/{orderid}', [PaymentController::class, 'checkTransactionStatus']); //orderid
+  </pre>
+  
+  <h6>Now Run Your Project And try these route on postman.</h6>
