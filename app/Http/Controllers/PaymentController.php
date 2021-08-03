@@ -73,7 +73,7 @@ class PaymentController extends Controller
                     'mid' => $mid,
                     'amount' => $request->amount,
                     'txnToken' => $txntoken,
-                    'callbackurl' => url('/api/' . $version . '/check-transaction-status/' . $orderid),
+                    'callbackurl' => url('/api/check-transaction-status/' . $orderid),
                 ]);
             } else {
                 return response()->json([
