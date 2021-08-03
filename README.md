@@ -35,8 +35,8 @@
       PAYTM_INDUSTRY_TYPE=YOUR_INDUSTRY_TYPE_HERE
     </code>
   </pre>
-    <p>Now Add paytm's utility package in your app. Go to project and create file in <code>App/paytm</code> folder and name that file <code>PaytmChecksum.php</code></p>
-    <p>here is the link to download <code>PaytmChecksum.php</code> file.on folder <code>App/paytm/</code>  <a href="https://github.com/paytm/Paytm_PHP_Checksum/blob/master/paytmchecksum/PaytmChecksum.php">paytm package</a></p>
+    <p>Now Add paytm's utility package in your app. Go to project and create file in <code>App/paytm/paytmchecksum</code> folder and name that file <code>PaytmChecksum.php</code></p>
+    <p>here is the link to download <code>PaytmChecksum.php</code> file.on folder <code>App/paytm/paytmchecksum</code>  <a href="https://github.com/paytm/Paytm_PHP_Checksum/blob/master/paytmchecksum/PaytmChecksum.php">paytm package</a></p>
     <p>Now Create A controller <code>php artisan make:controller PaymentController</code></p>
     <h2>Usage</h2>
     <h5>Making Transaction via Api</h5>
