@@ -24,7 +24,7 @@
         section and get test api detail. And put these detail on .env file</span
       >
     </p>
-    <h6>Now Add the paytm credentials in your <code>.env</code>file</h6>
+    <h4> <b>Step :- 3 - </b>Now Add the paytm credentials in your <code>.env</code>file</h4>
     <pre>
     <code>
       PAYTM_ENVIRONMENT=local 
@@ -35,11 +35,11 @@
       PAYTM_INDUSTRY_TYPE=YOUR_INDUSTRY_TYPE_HERE
     </code>
   </pre>
-    <p>Now Add paytm's utility package in your app. Go to project and create file in <code>App/paytm/paytmchecksum</code> folder and name that file <code>PaytmChecksum.php</code></p>
+    <p> <b>Step :- 4 - </b>Now Add paytm's utility package in your app. Go to project and create file in <code>App/paytm/paytmchecksum</code> folder and name that file <code>PaytmChecksum.php</code></p>
     <p>here is the link to download <code>PaytmChecksum.php</code> file.on folder <code>App/paytm/paytmchecksum</code>  <a href="https://github.com/paytm/Paytm_PHP_Checksum/blob/master/paytmchecksum/PaytmChecksum.php">paytm package</a></p>
     <p>Now Create A controller <code>php artisan make:controller PaymentController</code></p>
     <h2>Usage</h2>
-    <h5>Making Transaction via Api</h5>
+    <h5> <b>Step :- 5 - </b>Making Transaction via Api</h5>
     <pre>
     <code>
       <p><?php</p>
@@ -135,7 +135,7 @@
     }
 
   </pre>
-  <p>After creating payment request now verify the status of transaction using <code>orderid</code> .</p>
+  <p><b>Step :- 6 - </b>After creating payment request now verify the status of transaction using <code>orderid</code> .</p>
   <pre>
     <code>
       public function checkTransactionStatus($orderid)
@@ -201,11 +201,11 @@
     }
   </pre>
 
-  <p>Now Add the code on <code>Routes/api.php</code></p>
+  <p><b>Step :- 7 - </b>Now Add the code on <code>Routes/api.php</code></p>
   <pre>
     <code>
       Route::post('/initiate-payment', [PaymentController::class, 'paymentInitiate']); //amount   there you can pass only amount
       Route::get('/check-transaction-status/{orderid}', [PaymentController::class, 'checkTransactionStatus']); //orderid
   </pre>
   
-  <h6>Now Run Your Project And try these route on postman.</h6>
+  <h2> Step :- 8 - Now Run Your Project And try these route on postman.</h2>
