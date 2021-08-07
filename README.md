@@ -94,8 +94,10 @@
                             /* for Staging */
 
                             if (env('PAYTM_ENVIRONMENT') == 'local') {
+                                    //this is the testing/staging url
                                 $url = "https://securegw-stage.paytm.in/theia/api/v1/initiateTransaction?mid=" . $mid . "&orderId=" . $orderid;
                             } else {
+                            //this is the production url
                                 $url = "https://securegw.paytm.in/theia/api/v1/initiateTransaction?mid=" . $mid . "&orderId=" . $orderid;
                             }
                             /* for Production */
